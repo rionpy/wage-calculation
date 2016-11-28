@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html ng-app="wageApp" ng-controller="wageController">
+	<head>
+	  <% include ../partials/header.ejs %>
+	</head>
+
+	<body>
+		<div class="container">
+			<span class="btn btn-default btn-file">
+				Hello <input type="file" name="csv-input" accept=".csv" csv-reader>
+			</span>
+			<!-- <div ng-repeat="(yearKey, year) in wages">
+			{{yearKey}}
+			</div> -->
+			<wage-list>
+		</div>
+		<% include ../partials/footer.ejs %>
+	</body>
+</html>

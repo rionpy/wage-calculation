@@ -1,0 +1,8 @@
+<div ng-repeat="year in wages">
+	<div ng-repeat="month in year.months">
+		Monthly wages {{month.index}}/{{year.index}}:
+		<div ng-repeat="id in month.ids">
+			{{id.index}}, {{id.name}}, ${{id.monthTotalSalary}}
+		</div>
+	</div>
+</div>

@@ -1,0 +1,23 @@
+{
+  "name": "rionpy-wages",
+  "version": "0.0.1",
+  "description": "An exercise in Angular+Node+what not",
+  "engines": {
+    "node": "5.9.1"
+  },
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "angular": "1.5.9",
+    "bootstrap": "3.3.7",
+    "ejs": "2.4.1",
+    "express": "4.13.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rionpy/wage-calculation"
+  },
+  "license": "MIT"
+}
