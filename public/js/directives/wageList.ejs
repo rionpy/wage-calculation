@@ -2,7 +2,7 @@
 	<div ng-repeat="month in year.months">
 		<h3>Monthly wages {{month.index}}/{{year.index}}</h3>
 		<div class="table-container">
-			<table class="table table-striped">
+			<table class="table table-striped" ng-class="(wageDetails? 'details-active' : '')">
 			<thead>
 				<tr>
 					<th ng-click="month.order = setOrder(month.order, 'index')" ng-class="(month.order.id=='index'?(month.order.reverse?'asc-sort':'desc-sort'):'')">#</th>

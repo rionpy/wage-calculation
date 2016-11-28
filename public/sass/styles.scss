@@ -75,6 +75,15 @@ $sail: #B4E2F9;
 	.table-container {
 		overflow-x: auto;
 
+		table {
+			table-layout: fixed;
+			min-width: 400px;
+
+			&.details-active {
+				min-width: 600px;
+			}
+		}
+
 		th {
 			cursor: pointer;
 
