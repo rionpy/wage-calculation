@@ -26,7 +26,8 @@ wageApp.controller( 'wageController', [ '$scope', function( $scope ) {
 	/**
 	 * Returns minutes since 00:00.
 	 */
-	var hoursToMinutes = function( hours = '00:00' ) {
+	var hoursToMinutes = function( hours ) {
+		hours = hours || '00:00';
 		var time = hours.split( ':' );
 		return parseInt( time[0] ) * 60 + parseInt( time[1] );
 	};
@@ -34,7 +35,8 @@ wageApp.controller( 'wageController', [ '$scope', function( $scope ) {
 	/**
 	 * Compiles minutes to HH:mm.
 	 */
-	var compileTime = function( minutes = 0 ) {
+	var compileTime = function( minutes ) {
+		minutes = minutes || 0;
 		var hours = Math.floor( ( minutes / 60 ) );
 		return hours + ':' + ( minutes - ( hours * 60 ) );
 	};
@@ -42,7 +44,9 @@ wageApp.controller( 'wageController', [ '$scope', function( $scope ) {
 	/**
 	 * Calculate evening hours (between 18:00 & 6:00)
 	 */
-	var calculateEveningMinutes = function( startMinutes = 0, endMinutes = 0 ) {
+	var calculateEveningMinutes = function( startMinutes, endMinutes ) {
+		startMinutes = startMinutes || 0;
+		endMinutes = endMinutes || 0;
 		var eveningMinutes = 0;
 
 		// Shift started before 06:00
@@ -75,7 +79,8 @@ wageApp.controller( 'wageController', [ '$scope', function( $scope ) {
 	/**
 	 * Sorts an object by turning it into an array.
 	 */
-	var sortObjectToArray = function( object, sortProperty, reverse = false ) {
+	var sortObjectToArray = function( object, sortProperty, reverse ) {
+		reverse = reverse || false;
 		var sorted = [];
 		angular.forEach( object, function( item ) {
 			sorted.push( item );
