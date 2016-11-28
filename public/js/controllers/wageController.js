@@ -16,6 +16,14 @@ wageApp.controller( 'wageController', [ '$scope', function( $scope ) {
 	var MINUTE_WAGE = HOURLY_WAGE / 60;
 
 	/**
+	 * Define scope variables & controllers.
+	 */
+	$scope.wageDetails = false;
+	$scope.toggleWageDetails = function() {
+		$scope.wageDetails = !$scope.wageDetails;
+	}
+
+	/**
 	 * Returns minutes since 00:00.
 	 */
 	var hoursToMinutes = function( hours = '00:00' ) {
@@ -82,6 +90,20 @@ wageApp.controller( 'wageController', [ '$scope', function( $scope ) {
 	}
 
 	/**
+	 * Sets orderBy property for a month in the wages array.
+	 */
+	$scope.setOrder = function( order, id ) {
+		if ( order.id == id ) {
+			order.reverse = !order.reverse;
+		} else {
+			order.reverse = false;
+		}
+
+		order.id = id;
+		return order;
+	}
+
+	/**
 	 * Watches for changes in the selected CSV and calculates wages on change.
 	 */
 	$scope.$watch( 'csv', function( newCsv, oldCsv ) {
@@ -122,6 +144,10 @@ wageApp.controller( 'wageController', [ '$scope', function( $scope ) {
 					if ( ! ( month in hoursWorked[ year ].months ) ) {
 						hoursWorked[ year ].months[ month ] = {
 							'index': month,
+							'order': {
+								'id': 'index',
+								'reverse': false,
+							},
 							'ids': {},
 						};
 					}
@@ -191,13 +217,16 @@ wageApp.controller( 'wageController', [ '$scope', function( $scope ) {
 						} );
 
 						hoursWorked[ i ].months[ j ].ids[ g ].monthTotalSalary = monthTotalSalary.toFixed( 2 );
+						hoursWorked[ i ].months[ j ].ids[ g ].monthTotalSalaryValue = parseFloat( monthTotalSalary );
+
 						hoursWorked[ i ].months[ j ].ids[ g ].monthEveningCompensation = monthEveningCompensation.toFixed( 2 );
+						hoursWorked[ i ].months[ j ].ids[ g ].monthEveningCompensationValue = parseFloat( monthEveningCompensation );
+
 						hoursWorked[ i ].months[ j ].ids[ g ].monthOvertimeCompensation = monthOvertimeCompensation.toFixed( 2 );
+						hoursWorked[ i ].months[ j ].ids[ g ].monthOvertimeCompensationValue = parseFloat( monthOvertimeCompensation );
 					}
 				}
 			}
-
-			console.log(hoursWorked);
 
 			$scope.wages = hoursWorked;
 		}
