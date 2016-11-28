@@ -5,14 +5,17 @@
 	</head>
 
 	<body>
-		<div class="container">
-			<span class="btn btn-default btn-file">
-				Hello <input type="file" name="csv-input" accept=".csv" csv-reader>
-			</span>
-			<!-- <div ng-repeat="(yearKey, year) in wages">
-			{{yearKey}}
-			</div> -->
-			<wage-list>
+		<div class="header-container" bind-height-to="requiredPadding">
+			<header>
+				<h1>Wages</h1>&nbsp;
+				<span class="btn btn-default wage-toggle" ng-if="wages.length" ng-click="toggleWageDetails()">{{wageDetails? 'Hide details' : 'Show details'}}</span>
+			</header>
+			<div class="toolbar">
+				<csv-input></csv-input>
+			</div>
+		</div>
+		<div class="main" ng-style="{'padding-top': requiredPadding+10+'px'}">
+			<wage-list></wage-list>
 		</div>
 		<% include ../partials/footer.ejs %>
 	</body>

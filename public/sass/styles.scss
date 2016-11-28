@@ -1,3 +1,100 @@
+$anakiwa: #8cd9ff;
+$sail: #B4E2F9;
+
+@mixin media($arg1, $arg2:"") {
+	@if type-of($arg1) == list {
+		$arg2: nth($arg1, 2);
+		$arg1: nth($arg1, 1);
+	}
+	@if $arg2 != "" {
+		@media all and (#{$arg1}) and (#{$arg2}) {
+			@content;
+		}
+	} @else {
+		@media all and (#{$arg1}) {
+			@content;
+		}
+	}
+}
+
+@mixin sort( $ascending: true ) {
+	position: relative;
+	padding-left: 16px;
+
+	&:before {
+		position: absolute;
+		display: block;
+		top: 50%;
+		-webkit-transform: translateY(-50%);
+		-moz-transform: translateY(-50%);
+		-ms-transform: translateY(-50%);
+		transform: translateY(-50%);
+		left: 2px;
+
+		@if $ascending == true {
+			content: "\25B2";
+		} @else {
+			content: "\25BC";
+		}
+	}
+}
+
+.header-container {
+	position: fixed;
+	padding: 10px 20px;
+	background: rgba( 200, 200, 200, 0.9 );
+
+	header {
+		text-align: justify;
+
+		&:after {
+			content: "";
+			display: inline-block;
+			width: 100%;
+		}
+
+		h1 {
+			display: inline-block;
+			margin: 0 0 8px 0;
+		}
+
+		.wage-toggle {
+			display: inline-block;
+			margin-right: 10%;
+		}
+	}
+}
+
+.main {
+	padding-top: 120px;
+
+	@include media( 'min-width: 600px' ) {
+		padding: 120px 40px 0;
+	}
+
+	.table-container {
+		overflow-x: auto;
+
+		th {
+			cursor: pointer;
+
+			&.asc-sort {
+				@include sort( true );
+			}
+
+			&.desc-sort {
+				@include sort( false );
+			}
+		}
+
+		tr {
+			&.highlight-row {
+				background-color: $sail;
+			}
+		}
+	}
+}
+
 .btn-file {
 	position: relative;
 	overflow: hidden;
