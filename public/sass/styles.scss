@@ -1,3 +1,4 @@
+// Color variables named with http://chir.ag/projects/name-that-color
 $anakiwa: #8cd9ff;
 $sail: #B4E2F9;
 
@@ -39,8 +40,14 @@ $sail: #B4E2F9;
 	}
 }
 
+[ng\:cloak],
+[ng-cloak] {
+	display: none;
+}
+
 .header-container {
 	position: fixed;
+	width: 100%;
 	padding: 10px 20px;
 	background: rgba( 200, 200, 200, 0.9 );
 
@@ -58,9 +65,8 @@ $sail: #B4E2F9;
 			margin: 0 0 8px 0;
 		}
 
-		.wage-toggle {
+		.btn-container {
 			display: inline-block;
-			margin-right: 10%;
 		}
 	}
 }

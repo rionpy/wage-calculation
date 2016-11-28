@@ -8,13 +8,20 @@
 		<div class="header-container" bind-height-to="requiredPadding">
 			<header>
 				<h1>Wages</h1>&nbsp;
-				<span class="btn btn-default wage-toggle" ng-if="wages.length" ng-click="toggleWageDetails()">{{wageDetails? 'Hide details' : 'Show details'}}</span>
+				<div class="btn-container">
+					<span ng-cloak class="btn btn-default wage-toggle" ng-if="wages.length" ng-click="toggleWageDetails()">{{wageDetails? 'Hide details' : 'Show details'}}</span>
+					<span ng-cloak class="btn btn-default" ng-model="showInfo" ng-click="showInfo = !showInfo">{{showInfo? 'Hide info' : 'Show info'}}</span>
+					<span ng-cloak class="btn btn-default" ng-click="wages = false; csvFilename = ''; csv = false">Reset</span>
+				</div>
 			</header>
-			<div class="toolbar">
+			<div ng-cloak ng-if="showInfo" class="alert alert-info">
+				CSV format should be: Person Name, Person ID (integer), Date (dd.mm.YYYY), Shift start (hh:MM), Shift end (hh:MM).
+			</div>
+			<div ng-cloak class="toolbar">
 				<csv-input></csv-input>
 			</div>
 		</div>
-		<div class="main" ng-style="{'padding-top': requiredPadding+10+'px'}">
+		<div ng-cloak class="main" ng-style="{'padding-top': requiredPadding+10+'px'}">
 			<wage-list></wage-list>
 		</div>
 		<% include ../partials/footer.ejs %>

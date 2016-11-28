@@ -1,7 +1,10 @@
+<div ng-if="parseError" class="alert alert-danger">
+	{{parseError}}
+</div>
 <div class="input-group">
 	<label class="input-group-btn">
 		<span class="btn btn-primary btn-file">
-			Select CSV file<input type="file" name="csv-input" accept=".csv" csv-reader>
+			Select CSV file<form><input type="file" name="csv-input" accept=".csv" csv-reader></form>
 		</span>
 	</label>
 	<input type="text" class="form-control" readonly value="{{csvFilename}}">

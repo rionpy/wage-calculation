@@ -1,4 +1,21 @@
-wageApp.controller( 'wageController', [ '$scope', function( $scope ) {
+wageApp.controller( 'wageController', [ '$scope', '$http', function( $scope, $http ) {
+	/**
+	 * Provide dummy data for legacy browsers.
+	 */
+	$scope.dummyCsv = false;
+	if ( legacyBrowser ) {
+		$http.get( 'dummy.csv' ).then( function( response ) {
+			$scope.dummyCsv = response.data;
+		} );
+	}
+
+	/**
+	 * Parse dummy data. Called by file input in csvLegacy.ejs.
+	 */
+	$scope.parseDummyCsv = function() {
+		$scope.csv = $scope.dummyCsv;
+	}
+
 	/**
 	 * Define constants.
 	 */
@@ -33,16 +50,7 @@ wageApp.controller( 'wageController', [ '$scope', function( $scope ) {
 	};
 
 	/**
-	 * Compiles minutes to HH:mm.
-	 */
-	var compileTime = function( minutes ) {
-		minutes = minutes || 0;
-		var hours = Math.floor( ( minutes / 60 ) );
-		return hours + ':' + ( minutes - ( hours * 60 ) );
-	};
-
-	/**
-	 * Calculate evening hours (between 18:00 & 6:00)
+	 * Calculate evening hours (between 18:00 & 6:00).
 	 */
 	var calculateEveningMinutes = function( startMinutes, endMinutes ) {
 		startMinutes = startMinutes || 0;
@@ -109,10 +117,23 @@ wageApp.controller( 'wageController', [ '$scope', function( $scope ) {
 	}
 
 	/**
-	 * Watches for changes in the selected CSV and calculates wages on change.
+	 * Returns parse error for frontend.
 	 */
-	$scope.$watch( 'csv', function( newCsv, oldCsv ) {
-		if ( newCsv != oldCsv ) {
+	var getError = function( error ) {
+		return 'Error on line ' + $scope.currentCsvRow + ': ' + error;
+	}
+	$scope.currentCsvRow = 0;
+
+	/**
+	 * Watches for changes in the CSV scope variable and calculates wages on change.
+	 * The variable is updated by the csvReader directive.
+	 */
+	$scope.$watch( 'csv', function( newCsv ) {
+		// Reset parse error in frontend.
+		$scope.parseError = false;
+
+		// Only handle the watched CSV-variable if it's defined, as it is undefined when bound.
+		if ( newCsv ) {
 			var rows = newCsv.split( '\n' );
 			var hoursWorked = {};
 
@@ -123,67 +144,104 @@ wageApp.controller( 'wageController', [ '$scope', function( $scope ) {
 				if ( rows[ i ].match( /^\s*$/ ) ) {
 					continue;
 				}
+
+				// Set current row index for error reporting.
+				$scope.currentCsvRow = i + 1;
+
+				// Trim whitespace at start, end, and around delimiters.
 				var row = rows[ i ].replace( /^\s+|\s+(?=,)|^\s$/g, '' ).replace( /,\s+/g, ',' ).split( ',' );
-				try {
-					var name = row[0];
+
+				// Check for wrong amount of columns.
+				if ( row.length > 5 ) {
+					$scope.parseError = getError( 'Extra column.' );
+					return false;
+				} else if ( row.length < 5 ) {
+					$scope.parseError = getError( 'Missing columns.' );
+					return false;
+				}
+
+				var name = row[0];
+
+				// Validate ID as integer.
+				if ( row[1] == parseInt( row[1] ) ) {
 					var id = row[1];
-					var date = row[2].replace( /\s*/g, '' ).split( '.' );
+				} else {
+					$scope.parseError = getError( 'ID should be an integer.' );
+					return false;
+				}
+
+				// Validate date as dd.mm.YY.
+				var date = row[2].replace( /\s*/g, '' );
+				if ( date.match( /^(3[01]|[0-2]?[0-9])\.(1[0-2]|0?[0-9])\.[0-9]{4}$/g ) ) {
+					date = date.split( '.' );
 					var year = date[2];
-					// Pad the month.
+					// Pad the month for display purposes.
 					var month = ( '0' + date[1] ).slice( -2 );
 					var day = date[0];
-					var entryStart = hoursToMinutes( row[3] );
-					var entryEnd = hoursToMinutes( row[4] );
-					if ( entryEnd < entryStart ) {
-						entryEnd = DAY_MINUTES + entryEnd;
-					}
-					var shiftDuration = entryEnd - entryStart;
-					var eveningMinutes = calculateEveningMinutes( entryStart, entryEnd );
+				} else {
+					$scope.parseError = getError( 'Date should be in the following format: dd.mm.YYYY' );
+					return false;
+				}
 
-					if ( ! ( year in hoursWorked ) ) {
-						hoursWorked[ year ] = {
-							'index': year,
-							'months': {},
-						};
-					}
-					if ( ! ( month in hoursWorked[ year ].months ) ) {
-						hoursWorked[ year ].months[ month ] = {
-							'index': month,
-							'order': {
-								'id': 'index',
-								'reverse': false,
-							},
-							'ids': {},
-						};
-					}
-					if ( ! ( id in hoursWorked[ year ].months[ month ].ids ) ) {
-						hoursWorked[ year ].months[ month ].ids[ id ] = {
-							'index': id,
-							'name': name,
-							'days': {},
-						};
-					}
-					if ( ! ( day in hoursWorked[ year ].months[ month ].ids[ id ].days ) ) {
-						hoursWorked[ year ].months[ month ].ids[ id ].days[ day ] = {
-							'index': day,
-						};
-					}
+				// Validate shift timestamps.
+				var timestampRegexp = /^(0?[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/;
+				// if ( !row[3].match( /^(0?[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/ ) || !row[4].match( /^(0?[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/ ) ) {
+				if ( !timestampRegexp.test( row[3] ) || !timestampRegexp.test( row[4] ) ) {
+					$scope.parseError = getError( 'Invalid timestamp. Proper format is: hh:MM' );
+					return false;
+				}
 
-					// Add to total hours in minutes.
-					var totalMinutes = shiftDuration + hoursWorked[ year ].months[ month ].ids[ id ].days[ day ]['totalMinutes'] || shiftDuration;
-					hoursWorked[ year ].months[ month ].ids[ id ].days[ day ]['totalMinutes'] = totalMinutes;
+				// Turn shifts from hours to minutes for calculations.
+				var entryStart = hoursToMinutes( row[3] );
+				var entryEnd = hoursToMinutes( row[4] );
+				if ( entryEnd < entryStart ) {
+					entryEnd = DAY_MINUTES + entryEnd;
+				}
+				var shiftDuration = entryEnd - entryStart;
+				var eveningMinutes = calculateEveningMinutes( entryStart, entryEnd );
 
-					// Add to evening hours in minutes.
-					hoursWorked[ year ].months[ month ].ids[ id ].days[ day ]['eveningMinutes'] = eveningMinutes + hoursWorked[ year ].months[ month ].ids[ id ].days[ day ]['eveningMinutes'] || eveningMinutes;
+				// Initiate sub-objects.
+				if ( ! ( year in hoursWorked ) ) {
+					hoursWorked[ year ] = {
+						'index': year,
+						'months': {},
+					};
+				}
+				if ( ! ( month in hoursWorked[ year ].months ) ) {
+					hoursWorked[ year ].months[ month ] = {
+						'index': month,
+						'order': {
+							'id': 'index',
+							'reverse': false,
+						},
+						'ids': {},
+					};
+				}
+				if ( ! ( id in hoursWorked[ year ].months[ month ].ids ) ) {
+					hoursWorked[ year ].months[ month ].ids[ id ] = {
+						'index': id,
+						'name': name,
+						'days': {},
+					};
+				}
+				if ( ! ( day in hoursWorked[ year ].months[ month ].ids[ id ].days ) ) {
+					hoursWorked[ year ].months[ month ].ids[ id ].days[ day ] = {
+						'index': day,
+					};
+				}
 
-					// Define overtime hours in minutes.
-					if ( totalMinutes > REGULAR_HOURS ) {
-						hoursWorked[ year ].months[ month ].ids[ id ].days[ day ]['overtime'] = totalMinutes - REGULAR_HOURS;
-					} else {
-						hoursWorked[ year ].months[ month ].ids[ id ].days[ day ]['overtime'] = 0;
-					}
-				} catch (error) {
-					throw 'Bad formatting at line ' + ( i + 1 );
+				// Add to total hours in minutes.
+				var totalMinutes = shiftDuration + hoursWorked[ year ].months[ month ].ids[ id ].days[ day ]['totalMinutes'] || shiftDuration;
+				hoursWorked[ year ].months[ month ].ids[ id ].days[ day ]['totalMinutes'] = totalMinutes;
+
+				// Add to evening hours in minutes.
+				hoursWorked[ year ].months[ month ].ids[ id ].days[ day ]['eveningMinutes'] = eveningMinutes + hoursWorked[ year ].months[ month ].ids[ id ].days[ day ]['eveningMinutes'] || eveningMinutes;
+
+				// Define overtime hours in minutes.
+				if ( totalMinutes > REGULAR_HOURS ) {
+					hoursWorked[ year ].months[ month ].ids[ id ].days[ day ]['overtime'] = totalMinutes - REGULAR_HOURS;
+				} else {
+					hoursWorked[ year ].months[ month ].ids[ id ].days[ day ]['overtime'] = 0;
 				}
 			}
 
@@ -204,10 +262,12 @@ wageApp.controller( 'wageController', [ '$scope', function( $scope ) {
 						var monthTotalSalary = 0;
 						var monthEveningCompensation = 0;
 						var monthOvertimeCompensation = 0;
+
 						angular.forEach( ids[ g ].days, function( day, dayKey ) {
 							var eveningCompensation = day['eveningMinutes'] * ( EVENING_COMPENSATION / 60 );
 							var regularWage = day['totalMinutes'] * MINUTE_WAGE;
 							var overtimeCompensation = 0;
+
 							if ( day['overtime'] > ( OT_ZONE_1 + OT_ZONE_2 ) ) {
 								overtimeCompensation = MINUTE_WAGE * OVERTIME_FACTOR_1 * OT_ZONE_1 + MINUTE_WAGE * OVERTIME_FACTOR_2 * OT_ZONE_2 + MINUTE_WAGE * OVERTIME_FACTOR_3 * ( day['overtime'] - OT_ZONE_1 - OT_ZONE_2 );
 							} else if ( day['overtime'] > OT_ZONE_1 ) {

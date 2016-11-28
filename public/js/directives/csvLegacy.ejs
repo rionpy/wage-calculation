@@ -1,0 +1,11 @@
+<div class="alert alert-warning">
+<strong>Warning!</strong> Your browser does not properly support the HTML File API, which means the file input below won't work, but you can try it out with the fallback dummy CSV.
+</div>
+<div class="input-group">
+	<label class="input-group-btn">
+		<span class="btn btn-primary btn-file" ng-click="parseDummyCsv()" ng-disabled="(dummyCsv == false? true : false)">
+			Try it out
+		</span>
+	</label>
+	<input type="text" class="form-control" readonly value="dummy.csv">
+</div>
