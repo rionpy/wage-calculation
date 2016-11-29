@@ -134,7 +134,20 @@ wageApp.controller( 'wageController', [ '$scope', '$http', function( $scope, $ht
 
 		// Only handle the watched CSV-variable if it's defined, as it is undefined when bound.
 		if ( newCsv ) {
-			var rows = newCsv.split( /\r\n|\n|\r/ );
+			var rows = [];
+			// Match every row up to a line break that is not encased in double quotes.
+			var csvRowRegexp = /(?:[^"\r\n]|(?:"[^"]*"[^"\r\n]*))*(\r\n|\n|\r)/g;
+			var lastRowIndex;
+
+			// JavaScript doesn't support regex lookbehind, so use an alternate method.
+			while ( match = csvRowRegexp.exec( newCsv ) ) {
+				// Save full match with trailing line break character. Will be trimmed later.
+				rows.push( match[0] );
+				// Last row of the file is not matched - track the lastIndex of the last match.
+				lastRowIndex = csvRowRegexp.lastIndex;
+			}
+			rows.push( newCsv.slice( lastRowIndex ) );
+
 			var hoursWorked = {};
 
 			// Format CSV data to more manageable form.
