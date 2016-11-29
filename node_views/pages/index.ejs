@@ -5,9 +5,12 @@
 	</head>
 
 	<body>
-		<div class="header-container" bind-height-to="requiredPadding">
+		<div class="header-container" bind-height-to="requiredPadding" ng-class="(headerLock? '' : 'fixed')">
 			<header>
-				<h1>Wages</h1>&nbsp;
+				<div class="heading-container">
+					<h1>Wages</h1>
+					<span ng-cloak title="Lock the header down." class="lock-block" ng-model="headerLock" ng-click="headerLock = !headerLock">{{headerLock? '&#x1f513;' : '&#x1f512;'}}</span>
+				</div>&nbsp;
 				<div class="btn-container">
 					<span ng-cloak class="btn btn-default wage-toggle" ng-if="wages.length" ng-click="toggleWageDetails()">{{wageDetails? 'Hide details' : 'Show details'}}</span>
 					<span ng-cloak class="btn btn-default" ng-model="showInfo" ng-click="showInfo = !showInfo">{{showInfo? 'Hide info' : 'Show info'}}</span>

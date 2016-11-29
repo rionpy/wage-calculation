@@ -1,6 +1,7 @@
 // Color variables named with http://chir.ag/projects/name-that-color
 $anakiwa: #8cd9ff;
 $sail: #B4E2F9;
+$black: #000;
 
 @mixin media($arg1, $arg2:"") {
 	@if type-of($arg1) == list {
@@ -46,10 +47,21 @@ $sail: #B4E2F9;
 }
 
 .header-container {
-	position: fixed;
+	position: absolute;
 	width: 100%;
 	padding: 10px 20px;
 	background: rgba( 200, 200, 200, 0.9 );
+
+	&.fixed {
+		position: fixed;
+	}
+
+	.lock-block {
+		font-size: 2em;
+		cursor: pointer;
+		margin-left: 10px;
+		text-shadow: -1px 0px 3px $black;
+	}
 
 	header {
 		text-align: justify;
@@ -65,7 +77,8 @@ $sail: #B4E2F9;
 			margin: 0 0 8px 0;
 		}
 
-		.btn-container {
+		.btn-container,
+		.heading-container {
 			display: inline-block;
 		}
 	}
@@ -92,6 +105,7 @@ $sail: #B4E2F9;
 
 		th {
 			cursor: pointer;
+			z-index: -1;
 
 			&.asc-sort {
 				@include sort( true );
@@ -103,6 +117,8 @@ $sail: #B4E2F9;
 		}
 
 		tr {
+			cursor: pointer;
+
 			&.highlight-row {
 				background-color: $sail;
 			}
