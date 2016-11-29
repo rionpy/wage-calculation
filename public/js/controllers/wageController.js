@@ -134,7 +134,7 @@ wageApp.controller( 'wageController', [ '$scope', '$http', function( $scope, $ht
 
 		// Only handle the watched CSV-variable if it's defined, as it is undefined when bound.
 		if ( newCsv ) {
-			var rows = newCsv.split( '\n' );
+			var rows = newCsv.split( /\r\n|\n|\r/ );
 			var hoursWorked = {};
 
 			// Format CSV data to more manageable form.

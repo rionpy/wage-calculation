@@ -15,7 +15,8 @@
 				</div>
 			</header>
 			<div ng-cloak ng-if="showInfo" class="alert alert-info">
-				CSV format should be: Person Name, Person ID (integer), Date (dd.mm.YYYY), Shift start (hh:MM), Shift end (hh:MM).
+				CSV format should be: Person Name, Person ID (integer), Date (dd.mm.YYYY), Shift start (hh:MM), Shift end (hh:MM).<br>
+				First row is discarded as the header row.
 			</div>
 			<div ng-cloak class="toolbar">
 				<csv-input></csv-input>
