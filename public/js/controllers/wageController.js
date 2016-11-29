@@ -148,8 +148,9 @@ wageApp.controller( 'wageController', [ '$scope', '$http', function( $scope, $ht
 				// Set current row index for error reporting.
 				$scope.currentCsvRow = i + 1;
 
-				// Trim whitespace at start, end, and around delimiters.
-				var row = rows[ i ].replace( /^\s+|\s+(?=,)|^\s$/g, '' ).replace( /,\s+/g, ',' ).split( ',' );
+				// Trim whitespace at start, end, and around delimiters,
+				// and strip any double quotes.
+				var row = rows[ i ].replace( /"/g, '' ).replace( /^\s+|\s+(?=,)|\s+$|/g, '' ).replace( /,\s+/g, ',' ).split( ',' );
 
 				// Check for wrong amount of columns.
 				if ( row.length > 5 ) {
@@ -185,7 +186,6 @@ wageApp.controller( 'wageController', [ '$scope', '$http', function( $scope, $ht
 
 				// Validate shift timestamps.
 				var timestampRegexp = /^(0?[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/;
-				// if ( !row[3].match( /^(0?[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/ ) || !row[4].match( /^(0?[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/ ) ) {
 				if ( !timestampRegexp.test( row[3] ) || !timestampRegexp.test( row[4] ) ) {
 					$scope.parseError = getError( 'Invalid timestamp. Proper format is: hh:MM' );
 					return false;
