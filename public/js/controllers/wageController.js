@@ -178,7 +178,7 @@ wageApp.controller( 'wageController', [ '$scope', '$http', function( $scope, $ht
 
 				// Validate ID as integer.
 				if ( row[1] == parseInt( row[1] ) ) {
-					var id = row[1];
+					var id = parseInt( row[1] );
 				} else {
 					$scope.parseError = getError( 'ID should be an integer.' );
 					return false;
