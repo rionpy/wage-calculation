@@ -8,8 +8,8 @@
 					<th ng-click="month.order = setOrder(month.order, 'index')" ng-class="(month.order.id=='index'?(month.order.reverse?'asc-sort':'desc-sort'):'')">#</th>
 					<th ng-click="month.order = setOrder(month.order, 'name')" ng-class="(month.order.id=='name'?(month.order.reverse?'asc-sort':'desc-sort'):'')">Person</th>
 					<th ng-click="month.order = setOrder(month.order, 'monthTotalSalaryValue')" ng-class="(month.order.id=='monthTotalSalaryValue'?(month.order.reverse?'asc-sort':'desc-sort'):'')">Salary</th>
-					<th ng-click="month.order = setOrder(month.order, 'monthEveningCompensationValue')" ng-if="wageDetails" ng-class="(month.order.id=='monthEveningCompensationValue'?(month.order.reverse?'asc-sort':'desc-sort'):'')">Evening compensation</th>
-					<th ng-click="month.order = setOrder(month.order, 'monthOvertimeCompensationValue')" ng-if="wageDetails" ng-class="(month.order.id=='monthOvertimeCompensationValue'?(month.order.reverse?'asc-sort':'desc-sort'):'')">Overtime compensation</th>
+					<th ng-click="month.order = setOrder(month.order, 'monthEveningCompensationValue')" ng-show="wageDetails" ng-class="(month.order.id=='monthEveningCompensationValue'?(month.order.reverse?'asc-sort':'desc-sort'):'')">Evening compensation</th>
+					<th ng-click="month.order = setOrder(month.order, 'monthOvertimeCompensationValue')" ng-show="wageDetails" ng-class="(month.order.id=='monthOvertimeCompensationValue'?(month.order.reverse?'asc-sort':'desc-sort'):'')">Overtime compensation</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -17,8 +17,8 @@
 					<td>{{id.index}}</td>
 					<td>{{id.name}}</td>
 					<td>${{id.monthTotalSalary}}</td>
-					<td ng-if="wageDetails">${{id.monthEveningCompensation}}</td>
-					<td ng-if="wageDetails">${{id.monthOvertimeCompensation}}</td>
+					<td ng-show="wageDetails">${{id.monthEveningCompensation}}</td>
+					<td ng-show="wageDetails">${{id.monthOvertimeCompensation}}</td>
 				</tr>
 			</tbody>
 			</table>
